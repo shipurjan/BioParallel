@@ -46,8 +46,9 @@ jobs:
       uses: actions/download-artifact@v3.0.2
       with:
         name: bioParallel
+    - run: tree .
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
-        files: *
+        files: ./*
         tag_name: ${{ inputs.tag }}
