@@ -49,5 +49,5 @@ jobs:
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
-        files: .
+        files: *
         tag_name: ${{ inputs.tag }}
