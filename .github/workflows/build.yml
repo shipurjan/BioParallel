@@ -62,6 +62,7 @@ jobs:
       uses: actions/download-artifact@v3.0.2
       with:
         name: win-x64
+    - run: tree .
     - run: zip -r bioParallel_${{ inputs.tag }}_linux-x64.zip BioParallel_linux-x64/.
     - run: zip -r bioParallel_${{ inputs.tag }}_win-x64.zip BioParallel_win-x64/.
     - run: tree .
