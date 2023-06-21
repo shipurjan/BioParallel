@@ -32,17 +32,11 @@ jobs:
       run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/BioParallel_linux-x64/BioParallel
     - name: Publish win-x64
       run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/BioParallel_win-x64/BioParallel
-    - name: Upload a linux-x64 Build Artifact for deployment job
+    - name: Upload a Build Artifacts for deployment job
       uses: actions/upload-artifact@v3.1.2
       with:
-        name: linux-x64
-        path: ${{env.DOTNET_ROOT}}/BioParallel_linux-x64
-        retention-days: 1
-    - name: Upload a win-x64 Build Artifact for deployment job
-      uses: actions/upload-artifact@v3.1.2
-      with:
-        name: win-x64
-        path: ${{env.DOTNET_ROOT}}/BioParallel_win-x64
+        name: artifact
+        path: ${{env.DOTNET_ROOT}}
         retention-days: 1
         
   deploy:
@@ -54,14 +48,10 @@ jobs:
     environment:
       name: 'Production'
     steps:
-    - name: Download a linux-x64 artifact from build job
+    - name: Download a Build Artifact from build job
       uses: actions/download-artifact@v3.0.2
       with:
-        name: linux-x64
-    - name: Download a win-x64 artifact from build job
-      uses: actions/download-artifact@v3.0.2
-      with:
-        name: win-x64
+        name: artifact
     - run: tree .
     - run: zip -r bioParallel_${{ inputs.tag }}_linux-x64.zip BioParallel_linux-x64/.
     - run: zip -r bioParallel_${{ inputs.tag }}_win-x64.zip BioParallel_win-x64/.
