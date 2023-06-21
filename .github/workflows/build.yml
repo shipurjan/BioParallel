@@ -29,14 +29,14 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - run: tree .
     - name: Publish linux-x64
-      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/BioParallel_linux-x64/BioParallel
+      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/BioParallel/BioParallel_linux-x64
     - name: Publish win-x64
-      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/BioParallel_win-x64/BioParallel
+      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/BioParallel/BioParallel_win-x64
     - name: Upload a Build Artifacts for deployment job
       uses: actions/upload-artifact@v3.1.2
       with:
         name: artifact
-        path: ${{env.DOTNET_ROOT}}
+        path: ${{env.DOTNET_ROOT}}/BioParallel
         retention-days: 1
         
   deploy:
