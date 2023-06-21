@@ -27,13 +27,21 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - run: tree .
-    - name: Publish
-      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/bioParallel
-    - name: Upload a Build Artifact for deployment job
+    - name: Publish linux-x64
+      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/BioParallel_linux-x64/BioParallel
+    - name: Publish win-x64
+      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/BioParallel_win-x64/BioParallel
+    - name: Upload a linux-x64 Build Artifact for deployment job
       uses: actions/upload-artifact@v3.1.2
       with:
-        name: bioParallel
-        path: ${{env.DOTNET_ROOT}}/bioParallel
+        name: linux-x64
+        path: ${{env.DOTNET_ROOT}}/BioParallel_linux-x64
+        retention-days: 1
+    - name: Upload a win-x64 Build Artifact for deployment job
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: win-x64
+        path: ${{env.DOTNET_ROOT}}/BioParallel_win-x64
         retention-days: 1
         
   deploy:
@@ -44,15 +52,22 @@ jobs:
     environment:
       name: 'Production'
     steps:
-    - name: Download artifact from build job
+    - name: Download a linux-x64 artifact from build job
       uses: actions/download-artifact@v3.0.2
       with:
-        name: bioParallel
+        name: linux-x64
+    - name: Download a win-x64 artifact from build job
+      uses: actions/download-artifact@v3.0.2
+      with:
+        name: win-x64
     - name: Zip built files
-      run: zip -r bioParallel_${{ inputs.tag }}_win-x64.zip .
+    - run: zip -r bioParallel_${{ inputs.tag }}_linux-x64.zip BioParallel_linux-x64/.
+    - run: zip -r bioParallel_${{ inputs.tag }}_win-x64.zip BioParallel_win-x64/.
     - run: tree .
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
-        files: bioParallel_${{ inputs.tag }}_win-x64.zip
+        files: |
+          bioParallel_${{ inputs.tag }}_win-x64.zip
+          bioParallel_${{ inputs.tag }}_linux-x64.zip
         tag_name: ${{ inputs.tag }}
