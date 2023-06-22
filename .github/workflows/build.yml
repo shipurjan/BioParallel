@@ -66,7 +66,7 @@ jobs:
 
       - name: Zip artifacts
         run: |
-          zip -r artifacts.zip C:\BioParallel
+          Compress-Archive -Path C:\BioParallel -Destination artifacts.zip
 
       - name: Upload a Build Artifacts for deployment job
         uses: actions/upload-artifact@v3.1.2
