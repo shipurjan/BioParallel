@@ -76,9 +76,7 @@ jobs:
       
       - name: Grant permission to OSX and Linux executables and zip all releases
         run: for i in */; do \
-          [[ -f $i/BioParallel ]] && sudo chmod 777 $i/BioParallel;
-          zip -r "BioParallel-${{ inputs.tag }}_${i%/}.zip" "$i/."; \
-          done
+          [[ -f $i/BioParallel ]] && sudo chmod 777 $i/BioParallel; zip -r "BioParallel-${{ inputs.tag }}_${i%/}.zip" "$i/."; done
 
       - run: tree .
 
