@@ -11,7 +11,7 @@ on:
       environment:
         type: string
         default: 'Production'
-        description: Envinronment
+        description: Environment
         required: true
 
 jobs:
@@ -19,31 +19,62 @@ jobs:
     name: Build the program
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 7.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore --configuration Release
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-    - run: tree .
-    - name: Publish linux-x64
-      run: dotnet publish -c Release -r linux-x64 -p:PublishDir=C:\BioParallel\linux-x64\BioParallel-${{ inputs.tag }}
-    - name: Publish win-x64
-      run: dotnet publish -c Release -r win-x64 -p:PublishDir=C:\BioParallel\win-x64\BioParallel-${{ inputs.tag }}
-    - name: Publish osx-x64
-      run: dotnet publish -c Release -r osx-x64 -p:PublishDir=C:\BioParallel\osx-x64\BioParallel-${{ inputs.tag }}
-    - name: Upload a Build Artifacts for deployment job
-      uses: actions/upload-artifact@v3.1.2
-      with:
-        name: artifact
-        path: C:\BioParallel
-        retention-days: 1
-        
+      - uses: actions/checkout@v3
+
+      - name: Cache .NET packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-dotnet-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet-
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Test
+        run: dotnet test --verbosity normal
+
+      - run: tree .
+
+      - name: Publish linux-x64
+        run: dotnet publish -c Release -r linux-x64 -p:PublishDir=C:\BioParallel\linux-x64\BioParallel-${{ inputs.tag }}
+
+      - name: Publish win-x64
+        run: dotnet publish -c Release -r win-x64 -p:PublishDir=C:\BioParallel\win-x64\BioParallel-${{ inputs.tag }}
+
+      - name: Cache Homebrew packages
+        uses: actions/cache@v2
+        with:
+          path: /usr/local/Homebrew
+          key: ${{ runner.os }}-homebrew-${{ hashFiles('**/Brewfile.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-homebrew-
+
+      - name: Install Dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew bundle install --file=Brewfile
+
+      - name: Publish osx-x64
+        run: dotnet publish -c Release -r osx-x64 -p:PublishDir=C:\BioParallel\osx-x64\BioParallel-${{ inputs.tag }}
+
+      - name: Zip artifacts
+        run: |
+          zip -r artifacts.zip C:\BioParallel
+
+      - name: Upload a Build Artifacts for deployment job
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: artifact
+          path: artifacts.zip
+          retention-days: 1
+
   deploy:
     name: Deploy the program
     runs-on: ubuntu-latest
@@ -53,18 +84,24 @@ jobs:
     environment:
       name: ${{ inputs.environment }}
     steps:
-    - name: Download a Build Artifact from build job
-      uses: actions/download-artifact@v3.0.2
-      with:
-        name: artifact
-    - run: tree .
-    - run: for i in */; do zip -r "BioParallel-${{ inputs.tag }}_${i%/}.zip" "$i"; done
-    - run: tree .
-    - name: Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: |
-          *win-x64*.zip
-          *linux-x64*.zip
-          *osx-x64*.zip
-        tag_name: ${{ inputs.tag }}
+      - name: Download a Build Artifact from build job
+        uses: actions/download-artifact@v3.0.2
+        with:
+          name: artifact
+
+      - run: unzip artifacts.zip
+
+      - run: tree .
+
+      - run: for i in */; do zip -r "BioParallel-${{ inputs.tag }}_${i%/}.zip" "$i"; done
+
+      - run: tree .
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            *win-x64*.zip
+            *linux-x64*.zip
+            *osx-x64*.zip
+          tag_name: ${{ inputs.tag }}
