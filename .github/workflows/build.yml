@@ -1,7 +1,7 @@
 name: Build and deploy BioParallel
 
 env:
-  REPOSITORY_NAME: ${{ github.event.repository.name }}
+  REPOSITORY_NAME: BioParallel
 
 on:
   workflow_dispatch:
