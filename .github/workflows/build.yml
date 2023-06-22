@@ -93,7 +93,7 @@ jobs:
 
       - run: tree .
 
-      - run: for i in */; do zip -r "BioParallel-${{ inputs.tag }}_${i%/}.zip" "$i/."; done
+      - run: for i in BioParallel/*/; do zip -r "BioParallel-${{ inputs.tag }}_${i%/}.zip" "$i/."; done
 
       - run: tree .
 
