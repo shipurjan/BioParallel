@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioParallel", "BioParallel\BioParallel.csproj", "{A40BB53B-ABF7-463B-87A3-F61CE09FFB34}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioParallelTests", "BioParallelTests\BioParallelTests.csproj", "{F2C4B5CA-60E7-4AC4-A2C0-4FE0E29CAA57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{A40BB53B-ABF7-463B-87A3-F61CE09FFB34}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A40BB53B-ABF7-463B-87A3-F61CE09FFB34}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A40BB53B-ABF7-463B-87A3-F61CE09FFB34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2C4B5CA-60E7-4AC4-A2C0-4FE0E29CAA57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2C4B5CA-60E7-4AC4-A2C0-4FE0E29CAA57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2C4B5CA-60E7-4AC4-A2C0-4FE0E29CAA57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2C4B5CA-60E7-4AC4-A2C0-4FE0E29CAA57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
