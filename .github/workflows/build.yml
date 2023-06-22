@@ -1,7 +1,4 @@
-name: Build and deploy BioParallel
-
-env:
-  REPOSITORY_NAME: BioParallel
+name: Build and deploy ${{ github.event.repository.name }}
 
 on:
   workflow_dispatch:
@@ -19,7 +16,7 @@ on:
 
 jobs:
   build:
-    name: Build ${{ env.REPOSITORY_NAME }}
+    name: Build ${{ github.event.repository.name }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
@@ -46,23 +43,23 @@ jobs:
       - run: tree .
 
       - name: Publish linux-x64
-        run: dotnet publish -c Release -r linux-x64 -p:PublishDir=C:\${{ env.REPOSITORY_NAME }}\linux-x64\${{ env.REPOSITORY_NAME }}-${{ inputs.tag }}
+        run: dotnet publish -c Release -r linux-x64 -p:PublishDir=C:\${{ github.event.repository.name }}\linux-x64\${{ github.event.repository.name }}-${{ inputs.tag }}
 
       - name: Publish win-x64
-        run: dotnet publish -c Release -r win-x64 -p:PublishDir=C:\${{ env.REPOSITORY_NAME }}\win-x64\${{ env.REPOSITORY_NAME }}-${{ inputs.tag }}
+        run: dotnet publish -c Release -r win-x64 -p:PublishDir=C:\${{ github.event.repository.name }}\win-x64\${{ github.event.repository.name }}-${{ inputs.tag }}
 
       - name: Publish osx-x64
-        run: dotnet publish -c Release -r osx-x64 -p:PublishDir=C:\${{ env.REPOSITORY_NAME }}\osx-x64\${{ env.REPOSITORY_NAME }}-${{ inputs.tag }}
+        run: dotnet publish -c Release -r osx-x64 -p:PublishDir=C:\${{ github.event.repository.name }}\osx-x64\${{ github.event.repository.name }}-${{ inputs.tag }}
 
       - name: Upload a Build Artifacts for deployment job
         uses: actions/upload-artifact@v3.1.2
         with:
           name: artifact
-          path: C:/${{ env.REPOSITORY_NAME }}
+          path: C:/${{ github.event.repository.name }}
           retention-days: 1
 
   deploy:
-    name: Deploy ${{ env.REPOSITORY_NAME }}
+    name: Deploy ${{ github.event.repository.name }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -78,11 +75,11 @@ jobs:
       - run: tree .
       
       - name: Grant permission to OSX and Linux executables and zip all releases
-        run: for i in */; do cd $i; [[ -f ${{ env.REPOSITORY_NAME }}-${{ inputs.tag }}/${{ env.REPOSITORY_NAME }} ]] && sudo chmod 777 ${{ env.REPOSITORY_NAME }}-${{ inputs.tag }}/${{ env.REPOSITORY_NAME }}; zip -r "../${{ env.REPOSITORY_NAME }}-${{ inputs.tag }}_${i%/}.zip" "."; cd ..; done
+        run: for i in */; do cd $i; [[ -f ${{ github.event.repository.name }}-${{ inputs.tag }}/${{ github.event.repository.name }} ]] && sudo chmod 777 ${{ github.event.repository.name }}-${{ inputs.tag }}/${{ github.event.repository.name }}; zip -r "../${{ github.event.repository.name }}-${{ inputs.tag }}_${i%/}.zip" "."; cd ..; done
 
       - run: tree .
 
-      - name: Release ${{ env.REPOSITORY_NAME }}
+      - name: Release ${{ github.event.repository.name }}
         uses: softprops/action-gh-release@v1
         with:
           files: |
