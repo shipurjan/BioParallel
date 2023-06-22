@@ -1,5 +1,5 @@
 name: Test BioParallel
-run-name: Test ${{ github.ref_name }}@${{ github.sha[0] }}
+run-name: Test ${{ github.ref_name }}@${{ github.sha }}
 on: [push, pull_request] 
 
 jobs:
