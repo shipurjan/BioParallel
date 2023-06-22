@@ -1,0 +1,38 @@
+name: Test BioParallel
+run-name: Test ${{ github.event.repository.name }}@${{ github.ref_name }} ${{ github.head_ref }}.${{ github.sha }}
+on: [push, pull_request] 
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+    name: Build ${{ github.event.repository.name }}-${{ inputs.tag }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache .NET packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-dotnet-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet-
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build -c Release
+
+      - name: List tests
+        run: dotnet test -v m -c Release --list-tests --no-build
+
+      - name: Test
+        run: dotnet test -v n -c Release --no-build
