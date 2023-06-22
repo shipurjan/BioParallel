@@ -16,7 +16,7 @@ on:
 
 jobs:
   build:
-    name: Build ${{ github.event.repository.name }}
+    name: Build ${{ github.event.repository.name }}-${{ inputs.tag }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
@@ -59,7 +59,7 @@ jobs:
           retention-days: 1
 
   deploy:
-    name: Deploy ${{ github.event.repository.name }}
+    name: Deploy ${{ github.event.repository.name }}-${{ inputs.tag }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -79,7 +79,7 @@ jobs:
 
       - run: tree .
 
-      - name: Release ${{ github.event.repository.name }}
+      - name: Release ${{ github.event.repository.name }}-${{ inputs.tag }}
         uses: softprops/action-gh-release@v1
         with:
           files: |
