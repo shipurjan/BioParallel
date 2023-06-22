@@ -20,7 +20,7 @@ on:
 jobs:
   build:
     name: Build the program
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
@@ -35,11 +35,11 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - run: tree .
     - name: Publish linux-x64
-      run: dotnet publish -c Release -r linux-x64 -p:PublishDir=${{env.DOTNET_ROOT}}/BioParallel/linux-x64
+      run: dotnet publish -c Release -r linux-x64 -p:PublishDir=${{env.DOTNET_ROOT}}/BioParallel/linux-x64/BioParallel-${{ inputs.tag }}
     - name: Publish win-x64
-      run: dotnet publish -c Release -r win-x64 -p:PublishDir=${{env.DOTNET_ROOT}}/BioParallel/win-x64
+      run: dotnet publish -c Release -r win-x64 -p:PublishDir=${{env.DOTNET_ROOT}}/BioParallel/win-x64/BioParallel-${{ inputs.tag }}
     - name: Publish osx-x64
-      run: dotnet publish -c Release -r osx-x64 -p:PublishDir=${{env.DOTNET_ROOT}}/BioParallel/osx-x64
+      run: dotnet publish -c Release -r osx-x64 -p:PublishDir=${{env.DOTNET_ROOT}}/BioParallel/osx-x64/BioParallel-${{ inputs.tag }}
     - name: Upload a Build Artifacts for deployment job
       uses: actions/upload-artifact@v3.1.2
       with:
@@ -61,9 +61,7 @@ jobs:
       with:
         name: artifact
     - run: tree .
-    - run: zip -r BioParallel-${{ inputs.tag }}_linux-x64.zip BioParallel_linux-x64/.
-    - run: zip -r BioParallel-${{ inputs.tag }}_win-x64.zip BioParallel_win-x64/.
-    - run: zip -r BioParallel-${{ inputs.tag }}_osx-x64.zip BioParallel_osx-x64/.
+    - run: for i in */; do zip -r "BioParallel-${inputs.tag}_${i%/}.zip" "$i"; done
     - run: tree .
     - name: Release
       uses: softprops/action-gh-release@v1
