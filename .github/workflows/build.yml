@@ -8,12 +8,18 @@ on:
     inputs:
       tag:
         type: string
+        default: 'v0.0.0'
         description: Release tag
+        required: true
+      environment:
+        type: string
+        default: 'Production'
+        description: Envinronment
         required: true
 
 jobs:
   build:
-    name: Build the program for win-x64 and linux-x64
+    name: Build the program
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -29,9 +35,11 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - run: tree .
     - name: Publish linux-x64
-      run: dotnet publish -c Release --runtime linux-x64 -o ${{env.DOTNET_ROOT}}/BioParallel/BioParallel_linux-x64
+      run: dotnet publish -c Release -r linux-x64 -p:PublishDir=${{env.DOTNET_ROOT}}/BioParallel/linux-x64
     - name: Publish win-x64
-      run: dotnet publish -c Release --runtime win-x64 -o ${{env.DOTNET_ROOT}}/BioParallel/BioParallel_win-x64
+      run: dotnet publish -c Release -r win-x64 -p:PublishDir=${{env.DOTNET_ROOT}}/BioParallel/win-x64
+    - name: Publish osx-x64
+      run: dotnet publish -c Release -r osx-x64 -p:PublishDir=${{env.DOTNET_ROOT}}/BioParallel/osx-x64
     - name: Upload a Build Artifacts for deployment job
       uses: actions/upload-artifact@v3.1.2
       with:
@@ -40,26 +48,28 @@ jobs:
         retention-days: 1
         
   deploy:
-    name: Deploy the program for win-x64 and linux-x64 on Github Releases
+    name: Deploy the program
     runs-on: ubuntu-latest
     permissions:
       contents: write
     needs: build
     environment:
-      name: 'Production'
+      name: ${{ inputs.environment }}
     steps:
     - name: Download a Build Artifact from build job
       uses: actions/download-artifact@v3.0.2
       with:
         name: artifact
     - run: tree .
-    - run: zip -r bioParallel_${{ inputs.tag }}_linux-x64.zip BioParallel_linux-x64/.
-    - run: zip -r bioParallel_${{ inputs.tag }}_win-x64.zip BioParallel_win-x64/.
+    - run: zip -r BioParallel-${{ inputs.tag }}_linux-x64.zip BioParallel_linux-x64/.
+    - run: zip -r BioParallel-${{ inputs.tag }}_win-x64.zip BioParallel_win-x64/.
+    - run: zip -r BioParallel-${{ inputs.tag }}_osx-x64.zip BioParallel_osx-x64/.
     - run: tree .
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          bioParallel_${{ inputs.tag }}_win-x64.zip
-          bioParallel_${{ inputs.tag }}_linux-x64.zip
+          *win-x64*.zip
+          *linux-x64*.zip
+          *osx-x64*.zip
         tag_name: ${{ inputs.tag }}
