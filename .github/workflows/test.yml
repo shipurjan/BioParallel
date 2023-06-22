@@ -1,5 +1,5 @@
 name: Test BioParallel
-run-name: Test ${{ github.event.repository.name }}@${{ github.ref_name }} ${{ github.head_ref }}.${{ github.sha }}
+run-name: Test ${{ github.ref_name }}@${{ github.sha:0:7 }}
 on: [push, pull_request] 
 
 jobs:
@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
-    name: Build ${{ github.event.repository.name }}-${{ inputs.tag }}
+    name: Test ${{ github.event.repository.name }} @ ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
