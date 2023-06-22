@@ -48,19 +48,6 @@ jobs:
       - name: Publish win-x64
         run: dotnet publish -c Release -r win-x64 -p:PublishDir=C:\BioParallel\win-x64\BioParallel-${{ inputs.tag }}
 
-      - name: Cache Homebrew packages
-        uses: actions/cache@v2
-        with:
-          path: /usr/local/Homebrew
-          key: ${{ runner.os }}-homebrew-${{ hashFiles('**/Brewfile.lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-homebrew-
-
-      - name: Install Dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew bundle install --file=Brewfile
-
       - name: Publish osx-x64
         run: dotnet publish -c Release -r osx-x64 -p:PublishDir=C:\BioParallel\osx-x64\BioParallel-${{ inputs.tag }}
 
