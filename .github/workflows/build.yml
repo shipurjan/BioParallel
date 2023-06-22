@@ -1,4 +1,4 @@
-name: Build and deploy ${{ github.event.repository.name }}
+name: Build and deploy BioParallel
 
 on:
   workflow_dispatch:
