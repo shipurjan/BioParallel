@@ -54,7 +54,7 @@ jobs:
       - name: Upload a Build Artifacts for deployment job
         uses: actions/upload-artifact@v3.1.2
         with:
-          name: artifacts
+          name: artifact
           path: C:/BioParallel
           retention-days: 1
 
