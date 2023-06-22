@@ -73,8 +73,12 @@ jobs:
           name: artifact
 
       - run: tree .
-
-      - run: for i in */; do zip -r "BioParallel-${{ inputs.tag }}_${i%/}.zip" "$i/."; done
+      
+      - name: Grant permission to OSX and Linux executables and zip all releases
+        run: for i in */; do \
+          [[ -f $i/BioParallel ]] && sudo chmod 777 $i/BioParallel;
+          zip -r "BioParallel-${{ inputs.tag }}_${i%/}.zip" "$i/."; \
+          done
 
       - run: tree .
 
