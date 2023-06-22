@@ -1,4 +1,7 @@
-name: Build and deploy BioParallel
+env:
+  REPOSITORY_NAME: ${{ github.event.repository.name }}
+
+name: Build and deploy ${{ env.REPOSITORY_NAME }}
 
 on:
   workflow_dispatch:
@@ -16,7 +19,7 @@ on:
 
 jobs:
   build:
-    name: Build the program
+    name: Build ${{ env.REPOSITORY_NAME }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
@@ -43,23 +46,23 @@ jobs:
       - run: tree .
 
       - name: Publish linux-x64
-        run: dotnet publish -c Release -r linux-x64 -p:PublishDir=C:\BioParallel\linux-x64\BioParallel-${{ inputs.tag }}
+        run: dotnet publish -c Release -r linux-x64 -p:PublishDir=C:\${{ env.REPOSITORY_NAME }}\linux-x64\${{ env.REPOSITORY_NAME }}-${{ inputs.tag }}
 
       - name: Publish win-x64
-        run: dotnet publish -c Release -r win-x64 -p:PublishDir=C:\BioParallel\win-x64\BioParallel-${{ inputs.tag }}
+        run: dotnet publish -c Release -r win-x64 -p:PublishDir=C:\${{ env.REPOSITORY_NAME }}\win-x64\${{ env.REPOSITORY_NAME }}-${{ inputs.tag }}
 
       - name: Publish osx-x64
-        run: dotnet publish -c Release -r osx-x64 -p:PublishDir=C:\BioParallel\osx-x64\BioParallel-${{ inputs.tag }}
+        run: dotnet publish -c Release -r osx-x64 -p:PublishDir=C:\${{ env.REPOSITORY_NAME }}\osx-x64\${{ env.REPOSITORY_NAME }}-${{ inputs.tag }}
 
       - name: Upload a Build Artifacts for deployment job
         uses: actions/upload-artifact@v3.1.2
         with:
           name: artifact
-          path: C:/BioParallel
+          path: C:/${{ env.REPOSITORY_NAME }}
           retention-days: 1
 
   deploy:
-    name: Deploy the program
+    name: Deploy ${{ env.REPOSITORY_NAME }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -75,12 +78,11 @@ jobs:
       - run: tree .
       
       - name: Grant permission to OSX and Linux executables and zip all releases
-        run: for i in */; do \
-          [[ -f $i/BioParallel ]] && sudo chmod 777 $i/BioParallel; zip -r "BioParallel-${{ inputs.tag }}_${i%/}.zip" "$i/."; done
+        run: for i in */; do cd $i; [[ -f ${{ env.REPOSITORY_NAME }}-${{ inputs.tag }}/${{ env.REPOSITORY_NAME }} ]] && sudo chmod 777 ${{ env.REPOSITORY_NAME }}-${{ inputs.tag }}/${{ env.REPOSITORY_NAME }}; zip -r "../${{ env.REPOSITORY_NAME }}-${{ inputs.tag }}_${i%/}.zip" "."; cd ..; done
 
       - run: tree .
 
-      - name: Release
+      - name: Release ${{ env.REPOSITORY_NAME }}
         uses: softprops/action-gh-release@v1
         with:
           files: |
