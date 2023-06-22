@@ -1,3 +1,4 @@
+name: Build and deploy BioParallel
 run-name: Build and deploy ${{ github.event.repository.name }}-${{ inputs.tag }}
 
 on:
