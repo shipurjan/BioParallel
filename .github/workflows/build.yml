@@ -58,7 +58,7 @@ jobs:
       with:
         name: artifact
     - run: tree .
-    - run: for i in */; do zip -r "BioParallel-${inputs.tag}_${i%/}.zip" "$i"; done
+    - run: for i in */; do zip -r "BioParallel-${{ inputs.tag }}_${i%/}.zip" "$i"; done
     - run: tree .
     - name: Release
       uses: softprops/action-gh-release@v1
