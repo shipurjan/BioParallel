@@ -90,7 +90,7 @@ jobs:
             cd $i; 
             [[ -f ${{ github.event.repository.name }}-${{ inputs.tag }}/${{ github.event.repository.name }} ]] && 
             sudo chmod 777 ${{ github.event.repository.name }}-${{ inputs.tag }}/${{ github.event.repository.name }}; 
-            find ../. -type f -execdir cp "{}" $i ";"
+            find ../. -type f ! -name "*.zip" -execdir cp "{}" $i ";"
             zip -r "../${{ github.event.repository.name }}-${{ inputs.tag }}_${i%/}.zip" "."; 
             cd ..; 
           done
