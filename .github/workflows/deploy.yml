@@ -16,14 +16,11 @@ on:
         required: true
 
 jobs:
-  build:
-    name: Build ${{ github.event.repository.name }}-${{ inputs.tag }}
+  cache:
+    name: Cache packages for ${{ github.event.repository.name }}-${{ inputs.tag }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-      
-      - run: echo ${{ github.workspace }}
-
       - name: Cache .NET packages
         uses: actions/cache@v2
         with:
@@ -31,12 +28,30 @@ jobs:
           key: ${{ runner.os }}-dotnet-${{ hashFiles('**/*.csproj') }}
           restore-keys: |
             ${{ runner.os }}-dotnet-
-
+            
+  publish:
+    name: Publish ${{ github.event.repository.name }}-${{ inputs.tag }}
+    needs: cache
+    strategy:
+      matrix:
+        target: [win-x64, linux-x64, osx-x64]
+    runs-on: windows-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache .NET packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-dotnet-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet-
+            
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 7.0.304
-
+          
       - name: Restore dependencies
         run: dotnet restore
 
@@ -45,14 +60,11 @@ jobs:
 
       - run: tree .
 
-      - name: Publish linux-x64
-        run: dotnet publish "${{ github.workspace }}/BioParallel/BioParallel.csproj" -c Release -f net7.0 -r linux-x64 --self-contained --verbosity normal
+      - name: Publish ${{ matrix.target }}
+        run: dotnet publish "${{ github.workspace }}/BioParallel/BioParallel.csproj" -p:PublishDir="C:/${{ github.event.repository.name }}/${{ matrix.target }}" -c Release -f net7.0 -r ${{ matrix.target }} --self-contained -p:PublishSingleFile=true --verbosity normal
 
-      - name: Publish win-x64
-        run: dotnet publish "${{ github.workspace }}/BioParallel/BioParallel.csproj" -c Release -f net7.0 -r win-x64 --self-contained  --verbosity normal
-        
       - run: tree .
-      
+      - run: tree "C:/${{ github.event.repository.name }}"
 
       - name: Upload a Build Artifacts for deployment job
         uses: actions/upload-artifact@v3.1.2
@@ -67,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    needs: build
+    needs: publish
     environment:
       name: ${{ inputs.environment }}
     steps:
