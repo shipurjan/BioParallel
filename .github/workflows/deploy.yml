@@ -46,18 +46,20 @@ jobs:
       - run: tree .
 
       - name: Publish linux-x64
-        run: dotnet publish "${{ github.workspace }}/BioParallel/BioParallel.csproj" -r linux-x64 -p:PublishDir="C:/${{ github.event.repository.name }}/linux-x64" -c Release -f net7.0  --self-contained --verbosity normal
+        run: dotnet publish "${{ github.workspace }}/BioParallel/BioParallel.csproj" -r linux-x64 -p:PublishDir="C:/${{ github.event.repository.name }}/linux-x64" -c Release -f net7.0 -p:PublishSingleFile=true --self-contained --verbosity normal
 
       - name: Publish win-x64
-        run: dotnet publish "${{ github.workspace }}/BioParallel/BioParallel.csproj" -r win-x64 -p:PublishDir="C:/${{ github.event.repository.name }}/win-x64" -c Release -f net7.0  --self-contained  --verbosity normal
+        run: dotnet publish "${{ github.workspace }}/BioParallel/BioParallel.csproj" -r win-x64 -p:PublishDir="C:/${{ github.event.repository.name }}/win-x64" -c Release -f net7.0 -p:PublishSingleFile=true --self-contained --verbosity normal
         
       - name: Publish osx-x64
-        run: dotnet publish "${{ github.workspace }}/BioParallel/BioParallel.csproj" -r osx-x64 -p:PublishDir="C:/${{ github.event.repository.name }}/osx-x64" -c Release -f net7.0  --self-contained  --verbosity normal
+        run: dotnet publish "${{ github.workspace }}/BioParallel/BioParallel.csproj" -r osx-x64 -p:PublishDir="C:/${{ github.event.repository.name }}/osx-x64" -c Release -f net7.0 -p:PublishSingleFile=true --self-contained --verbosity normal
+        
+      - name: Copy License, README etc.
+        run: Copy-Item * C:/${{ github.event.repository.name }} -Include LICENSE,README.md 
         
       - run: tree .
       - run: tree "C:/${{ github.event.repository.name }}"
       
-
       - name: Upload a Build Artifacts for deployment job
         uses: actions/upload-artifact@v3.1.2
         with:
@@ -83,7 +85,15 @@ jobs:
       - run: tree .
       
       - name: Grant permission to OSX and Linux executables and zip all releases
-        run: for i in */; do cd $i; [[ -f ${{ github.event.repository.name }}-${{ inputs.tag }}/${{ github.event.repository.name }} ]] && sudo chmod 777 ${{ github.event.repository.name }}-${{ inputs.tag }}/${{ github.event.repository.name }}; zip -r "../${{ github.event.repository.name }}-${{ inputs.tag }}_${i%/}.zip" "."; cd ..; done
+        run: |
+          for i in */; do
+            cd $i; 
+            [[ -f ${{ github.event.repository.name }}-${{ inputs.tag }}/${{ github.event.repository.name }} ]] && 
+            sudo chmod 777 ${{ github.event.repository.name }}-${{ inputs.tag }}/${{ github.event.repository.name }}; 
+            find ../. -type f -execdir cp "{}" $i ";"
+            zip -r "../${{ github.event.repository.name }}-${{ inputs.tag }}_${i%/}.zip" "."; 
+            cd ..; 
+          done
 
       - run: tree .
 
