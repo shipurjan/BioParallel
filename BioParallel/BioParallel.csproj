@@ -2,8 +2,7 @@
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net7.0</TargetFramework>
-        <PublishSingleFile>true</PublishSingleFile>
-        <SelfContained>true</SelfContained>
+	<RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -22,7 +21,7 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="11.0.0-build20230604-01" />
+        <PackageReference Include="Avalonia.Controls.PanAndZoom" Version="11.0.0-rc1.1" />
         <PackageReference Include="Avalonia.Desktop" Version="11.0.0-rc1.1" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-rc1.1" />
