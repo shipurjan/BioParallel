@@ -46,23 +46,23 @@ jobs:
       - run: tree .
 
       - name: Publish linux-x64
-        run: dotnet publish "${{ github.workspace }}/BioParallel/BioParallel.csproj" -r linux-x64 -p:PublishDir="C:/${{ github.workspace }}/linux-x64" -c Release -f net7.0  --self-contained --verbosity normal
+        run: dotnet publish "${{ github.workspace }}/BioParallel/BioParallel.csproj" -r linux-x64 -p:PublishDir="C:/${{ github.event.repository.name }}/linux-x64" -c Release -f net7.0  --self-contained --verbosity normal
 
       - name: Publish win-x64
-        run: dotnet publish "${{ github.workspace }}/BioParallel/BioParallel.csproj" -r win-x64 -p:PublishDir="C:/${{ github.workspace }}/win-x64" -c Release -f net7.0  --self-contained  --verbosity normal
+        run: dotnet publish "${{ github.workspace }}/BioParallel/BioParallel.csproj" -r win-x64 -p:PublishDir="C:/${{ github.event.repository.name }}/win-x64" -c Release -f net7.0  --self-contained  --verbosity normal
         
       - name: Publish osx-x64
-        run: dotnet publish "${{ github.workspace }}/BioParallel/BioParallel.csproj" -r osx-x64 -p:PublishDir="C:/${{ github.workspace }}/osx-x64" -c Release -f net7.0  --self-contained  --verbosity normal
+        run: dotnet publish "${{ github.workspace }}/BioParallel/BioParallel.csproj" -r osx-x64 -p:PublishDir="C:/${{ github.event.repository.name }}/osx-x64" -c Release -f net7.0  --self-contained  --verbosity normal
         
       - run: tree .
-      - run: tree "C:/${{ github.workspace }}"
+      - run: tree "C:/${{ github.event.repository.name }}"
       
 
       - name: Upload a Build Artifacts for deployment job
         uses: actions/upload-artifact@v3.1.2
         with:
           name: artifact
-          path: C:/${{ github.workspace }}
+          path: C:/${{ github.event.repository.name }}
 
           retention-days: 1
 
