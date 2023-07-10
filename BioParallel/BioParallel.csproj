@@ -28,5 +28,6 @@
         <PackageReference Condition="'$(Configuration)' == 'Release'" Include="Avalonia.Themes.Simple" Version="11.0.0-rc1.1" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-rc1.1" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-rc1.1" />
+        <PackageReference Include="AvaloniaSpacedGrid" Version="11.0.0-rc1.1" />
     </ItemGroup>
 </Project>

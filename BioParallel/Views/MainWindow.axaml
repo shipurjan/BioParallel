@@ -3,6 +3,7 @@
         xmlns:vm="using:BioParallel.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sg="clr-namespace:AvaloniaSpacedGrid;assembly=AvaloniaSpacedGrid"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         xmlns:UserControls="clr-namespace:BioParallel.UserControls"
         x:Class="BioParallel.Views.MainWindow"
@@ -17,18 +18,22 @@
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <Grid ShowGridLines="True">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="300" />
-        </Grid.ColumnDefinitions>
+    <Grid ShowGridLines="False" ColumnDefinitions="*">
+        <sg:SpacedGrid Name="SpacedGrid" RowSpacing="5" ColumnSpacing="5" Background="Gray">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="160" />
+            </Grid.ColumnDefinitions>
 
+            <Rectangle Grid.Column="3" Fill="Gray" MinWidth="100" />
 
-        <UserControls:MovableCanvas Grid.Column="1"/>
-        <UserControls:MovableCanvas Grid.Column="2"/>
+            <UserControls:MovableCanvas Grid.Column="1" />
+            <UserControls:MovableCanvas Grid.Column="2" />
 
-		</Grid>
+            <Rectangle Grid.Column="3" Fill="Gray" MinWidth="100" />
+        </sg:SpacedGrid>
+    </Grid>
 
 </Window>
